@@ -3,9 +3,5 @@
         Home Page
     </x-slot:heading>
 
-    @auth
-    <h1>
-    {{ auth()->user()->name }}
-    </h1>
-    @endauth
+    <h1>Hello from the Home Page.</h1>
 </x-layout>

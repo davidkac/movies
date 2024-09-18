@@ -48,6 +48,16 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class);
     }
 
+    public function ratings()
+    {
+        $this->hasMany(Rating::class);
+    }
+
+    public function favoriteMovies()
+    {
+        return $this->belongsToMany(Movie::class, 'favorites')->withTimestamps();
+    }
+
 
     protected function casts(): array
     {

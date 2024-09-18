@@ -34,7 +34,7 @@ class LoginController extends Controller
 
         request()->session()->regenerate();
 
-        return redirect('/');
+        return redirect('/movies');
     }
 
 
@@ -42,6 +42,6 @@ class LoginController extends Controller
     {
         Auth::logout();
 
-        return view('welcome');
+        return redirect('login/create');
     }
 }

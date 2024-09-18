@@ -20,11 +20,23 @@ class RegisterController extends Controller
 
     public function store(Request $request)
     {
-
-        $data = request()->validate([
-            'name' => ['required','min:3'],
-            'email'      => ['required', 'email'],
-            'password'   => ['required', Password::min(6), 'confirmed']
+        $data = $request->validate([
+            'name' => ['required', 'min:3'],
+            'email' => [
+                'required',
+                'email',
+                'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', // Regex za validaciju emaila sa tačkom nakon domena
+            ],
+            'password' => [
+                'required',
+                Password::min(8)
+                    ->numbers(),
+                'confirmed'
+            ]
+        ], [
+            // Prilagođene poruke za greške
+            'email.regex' => 'The email must be a valid format (e.g., name@example.com) and must include a dot (.) after the domain.', // Poruka za regex
+            'email.email' => 'Please enter a valid email address.', // Poruka za osnovnu email validaciju
         ]);
 
         $user = User::create($data);
@@ -32,6 +44,6 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        return redirect('/');
+        return redirect('/movies');
     }
 }
