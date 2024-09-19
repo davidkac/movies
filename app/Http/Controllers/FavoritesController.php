@@ -12,6 +12,7 @@ class FavoritesController extends Controller
 
     public function index()
     {
+        
         $favoriteMovies = auth()->user()->favoriteMovies()->latest()->simplePaginate(5);
 
         return view('favorite', compact('favoriteMovies'));

@@ -21,14 +21,25 @@ class LoginController extends Controller
 
     public function store(Request $request)
     {
-        $credentials = request()->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required']
-        ]);
+        $credentials = request()->validate(
+            [
+                'email' => [
+                    'required',
+                    'email',
+                    'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', // Regex za validaciju emaila sa tačkom nakon domena
+                ],
+                'password' => ['required']
+            ],
+                [
+                    'email.regex' => 'The email must be a valid format (e.g., name@example.com) and must include a dot (.) after the domain.', // Poruka za regex
+                    'email.email' => 'Please enter a valid email address.', // Poruka za osnovnu email validaciju
+                ]
+        );
 
         if (! Auth::attempt($credentials)) {
             throw ValidationException::withMessages([
-                'email' => 'Sorry, those credentials do not match.'
+                'email' => 'Sorry, those credentials do not match.',
+                'password' => 'Sorry, those credentials do not match.'
             ]);
         }
 

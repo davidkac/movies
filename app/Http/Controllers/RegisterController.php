@@ -25,7 +25,8 @@ class RegisterController extends Controller
             'email' => [
                 'required',
                 'email',
-                'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', // Regex za validaciju emaila sa tačkom nakon domena
+                'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
+                'unique:users,email', // Provera da li email već postoji u bazi
             ],
             'password' => [
                 'required',
@@ -35,9 +36,11 @@ class RegisterController extends Controller
             ]
         ], [
             // Prilagođene poruke za greške
-            'email.regex' => 'The email must be a valid format (e.g., name@example.com) and must include a dot (.) after the domain.', // Poruka za regex
-            'email.email' => 'Please enter a valid email address.', // Poruka za osnovnu email validaciju
+            'email.regex' => 'The email must be a valid format (e.g., name@example.com) and must include a dot (.) after the domain.',
+            'email.email' => 'Please enter a valid email address.',
+            'email.unique' => 'This email is already in use.', // Poruka kada email već postoji
         ]);
+
 
         $user = User::create($data);
 

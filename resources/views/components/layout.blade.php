@@ -33,10 +33,13 @@
                         <div class="ml-4 flex items-center md:ml-6">
                             @guest
                             <x-nav-link href="/login/create" :active="request()->is('login/create')">Log In</x-nav-link>
-                            <x-nav-link href="/register/create"
-                                :active="request()->is('register/create')">Register</x-nav-link>
+                            <x-nav-link href="/register/create" :active="request()->is('register/create')">Register</x-nav-link>
                             @endguest
                             @auth
+                            <!-- Prikaz imena korisnika -->
+                            <span class="text-white mr-4">{{ auth()->user()->name }}</span>
+
+                            <!-- Dugme za odjavu -->
                             <form method="POST" action="/logout">
                                 @csrf
                                 <x-button>Log Out</x-button>
@@ -44,6 +47,7 @@
                             @endauth
                         </div>
                     </div>
+
                 </div>
             </div>
         </nav>
