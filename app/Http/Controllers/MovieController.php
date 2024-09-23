@@ -64,12 +64,14 @@ class MovieController extends Controller
         $commentsCount = $movie->comments()->count();
         $userRating = $movie->ratings()->where('user_id', auth()->id())->first();
         $averageRating = $movie->averageRating();
+        $isFavorite = auth()->check() ? auth()->user()->favoriteMovies->contains($movie->id) : false;
 
         return view('movies.show', [
             'movies' => $movie,
             'commentsCount' => $commentsCount,
             'userRating' => $userRating,
             'averageRating' => $averageRating,
+            'isFavorite' => $isFavorite,
         ]);
     }
 
@@ -95,6 +97,7 @@ class MovieController extends Controller
             'categories.required' => 'At least one category must be selected.',
         ]);
 
+
         // Čuvanje slike
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('images', 'public');
@@ -112,6 +115,7 @@ class MovieController extends Controller
         if (!empty($data['categories'])) {
             $movie->categories()->attach($data['categories']);
         }
+
 
         return redirect('/movies');
     }
@@ -171,12 +175,11 @@ class MovieController extends Controller
     public function destroy(Movie $movie)
     {
         $this->authorize('delete', $movie);
-    
+
         // Brisanje filma
         $movie->delete();
-    
+
         // Redirektuj na listu filmova
         return redirect()->route('movies.index')->with('success', 'Movie deleted successfully!');
     }
-    
 }

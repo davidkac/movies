@@ -7,49 +7,62 @@
         <h2 class="text-2xl font-bold mb-4">Top Rated Movies</h2>
 
         @forelse($movies as $movie)
-            <div class="flex items-center justify-between mb-4 p-4 bg-gray-800 text-white rounded-lg shadow-lg">
-                <!-- Slika filma -->
-                <div class="flex items-center">
-                    <img src="{{ filter_var($movie->image, FILTER_VALIDATE_URL) ? $movie->image : asset('storage/' . $movie->image) }}" 
-                        alt="{{ $movie->title }}" 
-                        class="w-20 h-20 rounded-lg object-cover mr-4">
-                    
-                    <!-- Naslov filma i prosečna ocena -->
-                    <div>
-                        <a href="{{ route('movie.show', $movie->id) }}" class="text-lg font-semibold text-blue-400">
-                            {{ $movie->title }}
-                        </a>
-                        <p class="text-gray-300">Rating: {{ number_format($movie->average_rating, 1) }}</p>
-                    </div>
-                </div>
-                
-                <!-- Dugme za dodavanje u omiljene ili uklanjanje - samo za ulogovane korisnike -->
-                @auth
-                    @if (auth()->user()->favoriteMovies->contains($movie->id))
-                        <form action="{{ route('favorites.remove', $movie->id) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                                Remove from Favorites
-                            </button>
-                        </form>
-                    @else
-                        <form action="{{ route('favorites.add', $movie->id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                                Add to Favorites
-                            </button>
-                        </form>
-                    @endif
-                @endauth
+        <div class="flex items-center justify-between mb-4 p-4 bg-gray-800 text-white rounded-lg shadow-lg">
+            <!-- Slika filma -->
+            <div class="flex items-center">
+                <img src="{{ filter_var($movie->image, FILTER_VALIDATE_URL) ? $movie->image : asset('storage/' . $movie->image) }}"
+                    alt="{{ $movie->title }}"
+                    class="w-20 h-20 rounded-lg object-cover mr-4">
 
-                <!-- Prikaz datuma kreiranja filma za goste - ako nisu ulogovani -->
-                @guest
-                    <p class="text-gray-400 italic">Released: {{ $movie->created_at->format('F d, Y') }}</p>
-                @endguest
+                <!-- Naslov filma i prosečna ocena -->
+                <div>
+                    <a href="{{ route('movie.show', $movie->id) }}" class="text-lg font-semibold text-blue-400">
+                        {{ $movie->title }}
+                    </a>
+                    <p class="text-gray-300">Rating: {{ number_format($movie->average_rating, 1) }}</p>
+                </div>
             </div>
+
+            <!-- Dugme za dodavanje u omiljene ili uklanjanje - samo za ulogovane korisnike -->
+            @auth
+            @if (auth()->user()->favoriteMovies->contains($movie->id))
+            <form action="{{ route('favorites.remove', $movie->id) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                    Remove from Favorites
+                </button>
+            </form>
+            @else
+            <form action="{{ route('favorites.add', $movie->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Add to Favorites
+                </button>
+            </form>
+            @endif
+            @endauth
+
+            <!-- Prikaz datuma kreiranja filma za goste - ako nisu ulogovani -->
+            @guest
+            <p class="text-gray-400 italic">Released: {{ $movie->created_at->format('F d, Y') }}</p>
+            @endguest
+        </div>
         @empty
-            <p class="text-gray-500">There are no top-rated movies with a rating higher than 3.</p>
+        <p class="text-gray-500">There are no top-rated movies with a rating higher than 3.</p>
         @endforelse
     </div>
+
+    <script>
+        window.addEventListener('pageshow', function(event) {
+            console.log('executed inside', event.persisted, performance.getEntriesByType("navigation")[0].type);
+            if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+                
+                // Umesto reload, koristi replaceState da zameni trenutni unos u istoriji bez dodavanja novog
+                window.history.replaceState(null, null, window.location.href);
+               
+                window.location.reload(); // Osveži stranicu bez dodavanja unosa u istoriju
+            }
+        });
+    </script>
 </x-layout>

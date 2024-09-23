@@ -23,7 +23,7 @@
                     <input id="password" name="password" type="password" autocomplete="current-password" required
                         class="block w-full rounded-md bg-gray-700 text-white border-0 py-2 pl-3 ring-1 ring-gray-600 focus:ring-2 focus:ring-indigo-500">
                 </div>
-                <x-form-error name="password" />
+            <x-form-error name="password" />
 
 
                 <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">

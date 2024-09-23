@@ -65,10 +65,10 @@
                         class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">EDIT</a>
                     @endcan
                     @can('delete', $movies)
-                    <form id="delete-movie-form" action="{{ route('movies.destroy', $movies->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this movie?');">
+                    <form id="delete-movie-form" action="{{ route('movies.destroy', $movies->id) }}" method="POST">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">DELETE</button>
+                        <button type="submit" onclick="return confirm('Are you sure you want to delete this movie?')" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">DELETE</button>
                     </form>
                     @endcan
 
@@ -109,7 +109,6 @@
                         class="border-b border-gray-500 p-1 focus:outline-none focus:border-blue-400 resize-none h-8 bg-gray-700 text-white"
                         style="box-shadow: none; min-height: 36px;"></textarea>
                     <div class="flex justify-end gap-2">
-                        <button type="button" class="text-gray-400 hover:text-gray-500">Cancel</button>
                         <button
                             type="submit"
                             class="bg-blue-500 text-white py-1 px-4 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
@@ -131,8 +130,8 @@
                         <form action="{{ route('comment.destroy', [$movies->id, $comment->id]) }}" method="POST" class="ml-4">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-500 hover:text-red-700">
-                                delete comment
+                            <button type="submit" onclick="return confirm('Are you sure you want to delete this comment?')" class="text-red-500 hover:text-red-700 text-2xl  cursor-pointer">
+                                <i class="fas fa-times"></i>
                             </button>
                         </form>
                         @endcan
@@ -143,38 +142,50 @@
                 </div>
             </div>
         </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                if (window.history.replaceState) {
-                    window.history.replaceState(null, null, window.location.href);
-                }
+        // Spreči default submit ponašanje i zameni unos u istoriji
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Sprečava default ponašanje forme
 
-                // Spreči default submit ponašanje i zameni unos u istoriji
-                document.querySelectorAll('form').forEach(form => {
-                    form.addEventListener('submit', function(e) {
-                        e.preventDefault(); // Sprečava default ponašanje forme
-
-                        fetch(this.action, {
-                            method: this.method,
-                            body: new FormData(this)
-                        }).then(response => {
-                            if (response.ok) {
-                                if (this.id === 'delete-movie-form') {
-                                    // Ako je forma za brisanje filma, redirect na /movies
-                                    window.location.href = '/movies';
-                                } else {
-                                    // Osveži stranicu nakon komentara ili druge akcije
-                                    window.history.replaceState(null, null, window.location.href); // Zamenjuje trenutni unos
-                                    location.reload(); // Osvežava stranicu bez dodavanja u istoriju
-                                }
-                            } else {
-                                alert('An error occurred. Please try again.');
-                            }
-                        });
-                    });
+                fetch(this.action, {
+                    method: this.method,
+                    body: new FormData(this)
+                }).then(response => {
+                    if (response.ok) {
+                        if (this.id === 'delete-movie-form') {
+                            // Ako je forma za brisanje filma, redirect na /movies
+                            window.location.href = '/movies';
+                        } else {
+                            // Osveži stranicu nakon komentara ili druge akcije
+                            window.history.replaceState(null, null, window.location.href); // Zamenjuje trenutni unos u istoriji
+                            window.location.reload(); // Osvežava stranicu bez dodavanja unosa u istoriju
+                        }
+                    } else {
+                        alert('An error occurred. Please try again.');
+                    }
                 });
             });
-            
-        </script>
+        });
+
+        // Dodaj listener za back dugme i osveži stranicu
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+                // Umesto reload, koristi replaceState da zameni trenutni unos u istoriji bez dodavanja novog
+                console.log('executed');
+                window.history.replaceState(null, null, window.location.href);
+                
+
+                window.location.reload(); // Osveži stranicu bez dodavanja unosa u istoriju
+            }
+        });
+    });
+</script>
+
+
 </x-layout>
