@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\MovieJob;
 use App\Models\Movie;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RatingController extends Controller
 {
@@ -23,7 +25,7 @@ class RatingController extends Controller
             'rating.max' => 'Rating must be between 1 and 5.',
         ]);
 
-        info($request->all());
+        $user = Auth::user();
 
         // Provera da li je korisnik već ocenio film
         $existingRating = $movie->ratings()->where('user_id', auth()->id())->first();
@@ -38,6 +40,8 @@ class RatingController extends Controller
             'user_id' => auth()->id(),
             'rating' => $request->input('rating'),
         ]);
+
+        MovieJob::dispatch($movie, $user, $request->input('rating'));
 
         return redirect()->route('movie.show', $movie->id)->with('success', 'Hvala što ste ocenili film!');
     }
